@@ -1,0 +1,716 @@
+package 롯데월드_티켓발행_시스템;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+public class Main {
+	
+// 파크입장권(1일, 오후 4시 각각)
+final static int ADULT_DAY = 59000, TEEN_DAY = 52000, CHILD_DAY = 46000, BABY_DAY = 15000, FREE = 0;
+final static int ADULT_AFTER = 47000, TEEN_AFTER = 41000, CHILD_AFTER = 35000, BABY_AFTER = 15000;
+
+//종합입장권(1일, 오후 4시 각각)
+final static int ADULT_DAY_TOTAL = 62000, TEEN_DAY_TOTAL = 54000, CHILD_DAY_TOTAL = 47000, BABY_DAY_TOTAL = 15000;
+final static int ADULT_AFTER_TOTAL = 50000, TEEN_AFTER_TOTAL = 43000, CHILD_AFTER_TOTAL = 36000, BABY_AFTER_TOTAL = 15000;
+
+//변수 설정(20개)
+static int totalPrice = 0;
+static int year, month, day;
+static int again = 0, againFinal = 0, next = 0; 
+static int todayYMD = 0, ticketSelect = 0, idNumber = 0, backIdNumber = 0, orderCount = 0, discount = 0, calAge = 0, generation = 0, price = 0, countPrice = 0, discountPrice = 0, countPriceNodiscount = 0, countPriceYesdiscount = 0, totalDiscountPrice = 0, totalDiscountPriceFinal = 0;
+static int add_addCount; static int[][] orderList = new int[10000][5];
+
+
+
+
+
+
+	public static void main(String[] args) {
+
+		ticketProcessFinal();
+	}
+
+//static void calTodayYMD(){
+//	
+//	Calendar calendar = Calendar.getInstance();
+//	SimpleDateFormat sdf = new SimpleDateFormat("YYMMdd");
+//	System.out.println(sdf.format(calendar.getTime()));
+//	
+//	
+//	//시간 설정(나이 구하기 위한 사전단계) 
+//		struct tm *today;
+//		time_t timer;
+//		time(&timer);
+//		today = localtime(&timer); 
+//		timer = time(NULL); 
+//		year = (today -> tm_year - 100) * 10000;
+//		month = (today -> tm_mon + 1) * 100;
+//		day = today -> tm_mday;
+//		todayYMD = year + month + day;
+//}
+
+static void calTicketSelect(){
+	//권종 선택하기  
+	
+	Scanner sc = new Scanner(System.in);
+	
+		do{  
+			System.out.printf("권종을 선택하세요.(After4는 오후 4시부터 입장)\n");
+			System.out.printf("\n1. 파크이용권 [1DAY]\n2. 파크이용권 [After4]\n3. 종합이용권 [1DAY]\n4. 종합이용권 [After4]\n");
+			ticketSelect = sc.nextInt();
+			
+			if(!(ticketSelect == 1 || ticketSelect == 2 || ticketSelect == 3 || ticketSelect == 4 )){
+				System.out.printf("\n 잘못입력하셨습니다. 다시 입력해주세요.\n\n");
+				}
+				
+		}while (!(ticketSelect == 1 || ticketSelect == 2 || ticketSelect == 3 || ticketSelect == 4 ));
+}
+
+static void calIdNumber(){
+	//주민등록번호 입력 앞 6글자 구하기 
+	
+	Scanner sc = new Scanner(System.in);
+		do{ 
+			System.out.printf("\n주민번호 앞 6글자를 입력하세요\n");
+			idNumber = sc.nextInt();			
+			
+			if(!((idNumber >= 000101) && (idNumber <= 991231))){
+				System.out.printf("\n 잘못입력하셨습니다. 다시 입력해주세요.\n\n");
+				}
+				
+		}while (!((idNumber >= 000101) && (idNumber <= 991231)));
+}
+
+static void calBackIdNumber(){
+	Scanner sc = new Scanner(System.in);
+	//주민등록번호 입력 뒷 1자리 구하기 
+		do{ 
+			System.out.printf("\n주민번호 뒤 1글자를 입력하세요\n");
+			backIdNumber = sc.nextInt();
+			if(!(backIdNumber == 1 || backIdNumber == 2 || backIdNumber == 3 || backIdNumber == 4 )){
+				System.out.printf("\n 잘못입력하셨습니다. 다시 입력해주세요.\n\n");
+				}
+				
+		}while(!(backIdNumber == 1 || backIdNumber == 2 || backIdNumber == 3 || backIdNumber == 4 ));
+}
+
+static void calMaxTicketSelect(){
+	Scanner sc = new Scanner(System.in);
+	//티켓 발급 개수 총10개로 제 한  
+		do{
+			System.out.printf("\n몇개를 주문하시겠습니까? (최대 10개)\n");
+			orderCount = sc.nextInt();
+			if(orderCount > 10){
+				System.out.printf("\n 잘못입력하셨습니다. 다시 입력해주세요.\n\n");
+				}
+				
+		}while(orderCount > 10);
+}
+
+static void calDiscount(){
+	Scanner sc = new Scanner(System.in);
+	//할인 관련 우대사항(5가지) 
+		do{
+			System.out.printf("\n우대사항을 선택하세요.\n1. 없음(나이 우대는 자동처리)\n2. 장애인\n3. 국가유공자\n4. 휴가장병\n5. 임산부\n6. 다둥이\n");
+			discount = sc.nextInt();
+			if(!(discount == 1 || discount == 2 || discount == 3 || discount == 4 || discount == 5 || discount == 6)){
+				System.out.printf("\n 잘못입력하셨습니다. 다시 입력해주세요.\n\n");
+			}
+			
+		}while (!(discount == 1 || discount == 2 || discount == 3 || discount == 4 || discount == 5 || discount == 6));
+}
+
+static void calAgeFromTodayYMD(){
+	//현재 날짜 기준으로 만나이 계산 
+		calAge = (todayYMD - (idNumber)) / 10000;	
+		if((backIdNumber == 1) || (backIdNumber == 2)){   // 주민등록번호 뒷자리 1 또는 2인 경우 추가 고 려  
+			calAge = calAge + 100;
+		}
+}
+
+static void calGeneration(){
+	if(calAge < 1){						
+			generation = 1;									//생후 만나이 1살 미만 
+		}	 
+		else if((calAge >= 1) && (calAge < 3)){	           //생후 만나이 1 ~ 3살 미만 
+			generation = 2;	
+		}
+		else if((calAge >= 3) && (calAge < 13)){	      //생후 만나이 3 ~ 13살 미만 
+			generation = 3;
+		}
+		else if((calAge >= 13) && (calAge < 18)){	     //생후 만나이 13 ~ 18세 미만 
+			generation = 4;
+		}
+		else if((calAge >= 19) && (calAge < 65)){	    //생후 만나이 19 ~ 65세 미만 
+			generation = 5;
+		}
+		else if(calAge >= 65){						    //생후 65세 이상~ 
+			generation = 6;
+		}
+}
+
+static void calDistributePriceFromTicketSelect(){
+	//생후 몇개월 나이에 따른 가격 할당 (파크이용권, 종합이용권 구분 후, 각 나이대별 가격 할당) 
+		switch(ticketSelect){
+			case 1 :                            // 파크이용권(1일) 
+				if(generation == 1){
+					price = FREE;
+				}
+				else if(generation == 2){
+					price = BABY_DAY;
+				}
+				else if(generation == 3){
+					price = CHILD_DAY;
+				}
+				else if(generation == 4){
+					price = TEEN_DAY;
+				}
+				else if(generation == 5){
+					price = ADULT_DAY;
+				}
+				else if(generation == 6){
+					price = CHILD_DAY;
+				} 
+				break;
+				
+			case 2 :                            // 파크이용권(오후 4시~) 
+				if(generation == 1){
+					price = FREE;
+				} 
+				else if(generation == 2){
+					price = BABY_AFTER;
+					}
+				else if(generation == 3){
+					price = CHILD_AFTER;
+					}
+				else if(generation == 4){
+					price = TEEN_AFTER;
+					}
+				else if(generation == 5){
+					price = ADULT_AFTER;
+					}
+				else if(generation == 6){
+					price = CHILD_AFTER;
+					} 
+				break;
+				
+			case 3 :                            // 종합이용권(1일) 
+				if(generation == 1){
+					price = FREE;
+					} 
+				else if(generation == 2){
+					price = BABY_DAY_TOTAL;
+					}
+				else if(generation == 3){
+					price = CHILD_DAY_TOTAL;
+					}
+				else if(generation == 4){
+					price = TEEN_DAY_TOTAL;
+					}
+				else if(generation == 5){
+					price = ADULT_DAY_TOTAL;
+					}
+				else if(generation == 6){
+					price = CHILD_DAY_TOTAL;
+					}
+				break;
+				
+			case 4 :                            // 종합이용권(오후 4시~) 
+				if(generation == 1){
+					price = FREE;
+				} 
+				else if(generation == 2){
+					price = BABY_AFTER_TOTAL;
+					}
+				else if(generation == 3){
+					price = CHILD_AFTER_TOTAL;
+					}
+				else if(generation == 4){
+					price = TEEN_AFTER_TOTAL;
+					}
+				else if(generation == 5){
+					price = ADULT_AFTER_TOTAL;
+					}
+				else if(generation == 6){
+					price = CHILD_AFTER_TOTAL;
+					}
+				break;
+		}
+}
+
+static void calCountPriceWithDiscount(){
+	// 나이대별 가격과 총 수량을 곱한 실제 티켓가격 구하 기  
+		if(orderCount <= 10){
+			countPrice = price * orderCount;                                    //1. 총 구매한 티켓 금액(1 = 2 + 3) 
+			countPriceYesdiscount = countPrice - (price * (orderCount - 2));    //2. 총 구매한 티켓 금액 - 각종 우대사항별 혜택(동반 1인 할인률 반영 등을 위해서) 인원을 고려하여 분리 
+			countPriceNodiscount = countPrice - (price * 2);                    //3. 총 구매한 티켓 금액 - 우대사항 혜택을 받지 못하는 인원 고려하여 분리 
+		}
+}
+
+static void calFinalPriceWithDiscount(){
+	// 우대사항별 할인율을 고려한 실제 가격 계산  
+			switch(discount){
+				case 1 :							      //1. 우대사항 없음 - > 총 구매한 티켓 금액이 실제 지불해야 할 금액		
+					discountPrice = countPrice;
+					totalDiscountPrice = discountPrice;
+					break;
+				
+				case 2 :						         //2. 장애인 우 대  -> 종합이용권/파크이용권 본인 +  동반1인까지 50% 할인 
+				if(orderCount >= 3){
+					discountPrice = countPriceNodiscount;
+					if((ticketSelect == 1) || (ticketSelect == 2) || (ticketSelect == 3) || (ticketSelect == 4)){
+						totalDiscountPrice = (int) (discountPrice + countPriceYesdiscount * 0.5); 	
+					}
+				}else{
+					discountPrice = (int) (countPrice * 0.5);
+					totalDiscountPrice = discountPrice;
+				}	
+					break;					
+				
+				case 3 :									//3. 국가유공자 우 대  -> 종합이용권/파크이용권 본인 +  동반1인까지 50% 할인 
+					if(orderCount >= 3){
+					discountPrice = countPriceNodiscount;
+					if((ticketSelect == 1) || (ticketSelect == 2) || (ticketSelect == 3) || (ticketSelect == 4)){
+						totalDiscountPrice = (int) (discountPrice + countPriceYesdiscount * 0.5);
+					}
+				}else{
+					discountPrice = (int) (countPrice * 0.5);
+					totalDiscountPrice = discountPrice;
+				}	
+					break;
+					
+				case 4 :									//4. 휴가장병 우 대  -> 종합이용권  본인 +  동반1인까지 49% 할인 
+					if(orderCount >= 3){
+					discountPrice = countPriceNodiscount;
+					if((ticketSelect == 3) || (ticketSelect == 4)){
+						totalDiscountPrice = (int) (discountPrice + countPriceYesdiscount * 0.51); 	
+					}else{
+					discountPrice = countPrice;
+					totalDiscountPrice = discountPrice;
+					}
+				}else{
+					if((ticketSelect == 3) || (ticketSelect == 4)){
+					discountPrice = (int) (countPrice * 0.51);
+					totalDiscountPrice = discountPrice;	
+					}else{
+					discountPrice = countPrice;
+					totalDiscountPrice = discountPrice;
+					}
+				}
+					break;
+				
+				case 5 :									//5. 임산부 우 대  -> 종합이용권  본인만 50% 할인 
+					if(orderCount >= 3){
+						discountPrice = countPriceNodiscount + countPriceNodiscount;
+						if((ticketSelect == 3) || (ticketSelect == 4)){
+							totalDiscountPrice = (int) (discountPrice + ((countPriceYesdiscount / 2) * 0.5)); 	
+						}else{
+							discountPrice = countPrice;
+							totalDiscountPrice = discountPrice;
+						}
+					}
+					else if(orderCount == 2){
+						if((ticketSelect == 3) || (ticketSelect == 4)){
+						discountPrice = (int) ((countPrice / 2) + (countPrice / 2) * 0.5);
+						totalDiscountPrice = discountPrice;
+						}else{
+							discountPrice = countPrice;
+							totalDiscountPrice = discountPrice;
+						}
+					}else{
+						if((ticketSelect == 3) || (ticketSelect == 4)){
+							discountPrice = (int) (countPrice * 0.5);
+							totalDiscountPrice = discountPrice;
+						}else{
+							discountPrice = countPrice;
+							totalDiscountPrice = discountPrice;
+						}
+					}
+					break;
+					
+				case 6 :								 	//6. 다둥이 행복카드 우대  	-> 종합이용권 본인 + 동반1인까지 30% 할인 
+					if(orderCount >= 3){
+						discountPrice = countPriceNodiscount;
+						if((ticketSelect == 3) || (ticketSelect == 4)){
+							totalDiscountPrice = (int) (discountPrice + countPriceYesdiscount * 0.7); 	
+						}else{
+							discountPrice = countPrice;
+							totalDiscountPrice = discountPrice;
+						}
+					}else if(orderCount <= 2){
+						if((ticketSelect == 3) || (ticketSelect == 4)){
+							discountPrice = (int) (countPrice * 0.7);
+							totalDiscountPrice = discountPrice;
+						}else{
+							discountPrice = countPrice;
+							totalDiscountPrice = discountPrice;
+						}
+					}
+					break;		
+			}
+}
+
+static void calSummary(){
+	for(int index = 0; index < add_addCount; index++){
+				if(orderList[index][0] == 1){
+					System.out.printf("파크이용권[1DAY] ");                                                  // 파크이용권 관련 결과 출력분  
+				if(orderList[index][1] == 1 || orderList[index][1] == 2){
+					System.out.printf(" 베이비 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}else if(orderList[index][1] == 3){
+					System.out.printf(" 어린이 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}else if(orderList[index][1] == 4){
+					System.out.printf(" 청소년 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}else if(orderList[index][1] == 5){
+					System.out.printf("  성인 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}else{
+					System.out.printf("  경로 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}
+				}else if(orderList[index][0] == 2){                                           // 파크이용권[오후4시~] 관련 결과 출력분  
+					System.out.printf("파크이용권[After4] ");
+					if(orderList[index][1] == 1 || orderList[index][1] == 2){
+						System.out.printf("베이비 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}else if(orderList[index][1] == 3){
+					System.out.printf("어린이 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}else if(orderList[index][1] == 4){
+					System.out.printf("청소년 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}else if(orderList[index][1] == 5){
+					System.out.printf("성인 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}else{
+					System.out.printf("경로 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 미적용(종합이용권만 가능)\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 미적용(종합이용권만 가능)\n");
+					}else{
+						System.out.printf("* 다둥이 우대 미적용(종합이용권만 가능)\n");
+					}
+				}
+				}else if(orderList[index][0] == 3){                                           // 종합이용권 관련 결과 출력분  
+					System.out.printf("종합이용권[1DAY] ");
+					if(orderList[index][1] == 1 || orderList[index][1] == 2){
+						System.out.printf(" 베이비 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}else if(orderList[index][1] == 3){
+					System.out.printf(" 어린이 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}else if(orderList[index][1] == 4){
+					System.out.printf(" 청소년 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}else if(orderList[index][1] == 5){
+					System.out.printf("  성인 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}else{
+					System.out.printf("  경로 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}
+				}else{                                                                        // 종합이용권[오후 4시~] 관련 결과 출력분  
+					System.out.printf("종합이용권[After4] ");
+					if(orderList[index][1] == 1 || orderList[index][1] == 2){
+						System.out.printf("베이비 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}else if(orderList[index][1] == 3){
+					System.out.printf("어린이 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}else if(orderList[index][1] == 4){
+					System.out.printf("청소년 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}else if(orderList[index][1] == 5){
+					System.out.printf("성인 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}else{
+					System.out.printf("경로 X %d  %d원 ", orderList[index][2], orderList[index][3]);
+					if(orderList[index][4] == 1){
+						System.out.printf("* 우대적용 없음\n");
+					}else if(orderList[index][4] == 2){
+						System.out.printf("* 장애인 우대 적용\n");
+					}else if(orderList[index][4] == 3){
+						System.out.printf("* 국가유공자 우대 적용\n");
+					}else if(orderList[index][4] == 4){
+						System.out.printf("* 휴가장병 우대 적용\n");
+					}else if(orderList[index][4] == 5){
+						System.out.printf("* 임산부 우대 적용\n");
+					}else{
+						System.out.printf("* 다둥이 우대 적용\n");
+					}
+				}
+			}
+		}
+}
+
+static void ticketProcessFinal(){
+	Scanner sc = new Scanner(System.in);
+do{
+	do{
+		//calTodayYMD();
+		calTicketSelect();
+		calIdNumber();
+		calBackIdNumber();
+		calMaxTicketSelect();
+		calDiscount();
+		calAgeFromTodayYMD();
+		calGeneration();
+		calDistributePriceFromTicketSelect();
+		calCountPriceWithDiscount();
+		calFinalPriceWithDiscount();
+
+		totalDiscountPriceFinal += totalDiscountPrice;
+		
+		System.out.printf("\n ***** 가격은 %d원입니다. *****\n", totalDiscountPrice);
+		System.out.printf("\n 계속 발권 하시겠습니까? \n 1. 티켓 발권\n 2. 종료\n");
+		again = sc.nextInt();
+			
+			orderList[add_addCount][0] = ticketSelect;   // 이용권 종류 
+			orderList[add_addCount][1] = generation;  // 나이 
+			orderList[add_addCount][2] = orderCount;  // 구매수량 
+			orderList[add_addCount][3] = totalDiscountPrice;  // 지불 금액 
+			orderList[add_addCount][4] = discount;   // 우대사항 
+			
+			add_addCount++;
+			
+	}while(again == 1);
+	
+	System.out.printf("\n감사합니다.\n\n");
+	System.out.printf("====================================롯데월드======================================\n\n");
+			
+			calSummary();		
+			
+			System.out.printf("\n입장료 총액은 %d원 입니다.\n\n", totalDiscountPriceFinal);
+			System.out.printf("==================================================================================\n\n");
+			System.out.printf("계속 진행(1: 새로운 주문, 2: 프로그램 종료) : ");
+			againFinal = sc.nextInt();
+			System.out.printf("\n");		
+
+    }while(againFinal == 1);
+  }
+}
