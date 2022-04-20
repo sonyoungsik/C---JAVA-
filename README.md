@@ -4,7 +4,7 @@
 
 주요 내용 : 
 
-          1. 22.4.20 기준 각 InputData, CalculateData, OutputData 클래스와 StaticData 및 Main 클래스로 구분하였습니다.
+          1. 22.4.20 기준 각 InputData, CalculateData, OutputData 클래스와 StaticData 및 Main 클래스로 구분
           2. 클래스 별 변수를 지정하고, 해당 변수를 반영한 메소드를 실행합니다.
           3. Main 클래스 main 메소드에서 실행 시 결과값이 나옵니다.
           
