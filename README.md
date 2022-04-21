@@ -13,4 +13,7 @@
           1. ArrayList<> = new ArrayList<>(); 생성 후 계속 데이터를 누적시키기
           2. public 자료형 / public static 자료형 중 static를 사용하지 않고 변수 선언하기
           3. private 자료형 선언 후 getter와 setter를 만들기 -->
-![image](https://user-images.githubusercontent.com/102119900/164415497-65d2ea51-8ebc-4633-9b91-8ac49319f48c.png)
+            ![image](https://user-images.githubusercontent.com/102119900/164415497-65d2ea51-8ebc-4633-9b91-8ac49319f48c.png)
+             ![image](https://user-images.githubusercontent.com/102119900/164415924-16d62996-a3be-4085-9d5d-eeb3e4cb2a4a.png)
+
+
