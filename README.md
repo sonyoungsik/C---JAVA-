@@ -4,16 +4,25 @@
 
 주요 내용 : 
 
-<!-- 
-          1. 22.4.20 기준 각 InputData, CalculateData, OutputData 클래스와 StaticData 및 Main 클래스로 구분
+
+          1. 22.4.21 기준 각 InputData, CalculateData, OutputData 클래스와 StaticData 및 Main 클래스로 구분
           2. 클래스 별 변수를 지정하고, 해당 변수를 반영한 메소드를 실행합니다.
           3. Main 클래스 main 메소드에서 실행 시 결과값이 나옵니다.
+          4. 클래스에 분산된 변수를 한 곳(OrderData)에 모았습니다.
+          5. 이차원 배열을 빼고, OrderData 변수를 호출하여 ArrayList에 하나씩
+             값을 대입하고, 반복하여 결과문을 출력하려고 시도했지만 실패했습니다.
+          6. CSV 파일 추출 및 매출 분석 진행 못했습니다.
           
-          ** 앞으로 할 내용 **
-          1. ArrayList<> = new ArrayList<>(); 생성 후 계속 데이터를 누적시키기
-          2. public 자료형 / public static 자료형 중 static를 사용하지 않고 변수 선언하기
-          3. private 자료형 선언 후 getter와 setter를 만들기 -->
-            ![image](https://user-images.githubusercontent.com/102119900/164415497-65d2ea51-8ebc-4633-9b91-8ac49319f48c.png)
-            ![image](https://user-images.githubusercontent.com/102119900/164415924-16d62996-a3be-4085-9d5d-eeb3e4cb2a4a.png)
+느낀 점 :
+
+          1. 머릿속에 있는 아이디어를 구현하는 것이 쉽지 않다.
+          2. 결과물을 내려고 조급하다보니, 다른 사람의 코드를 이해하는 것이 아니라, 그대로 복사하려는 나쁜 마음(?)이 들어서
+             실제 원하는 출력값은 안나왔지만 코드를 작성하는 과정에서 클래스를 분류하고, 생성자로 다른 클래스 변수를 호출해서 사용하고,
+             배열과 반복문을 이용해서 여러 반복 동작을 간단하게 작성할 있는 로직을 이해할 수 있어 좋았습니다.
+          
+          3. 비전공자로서 자바를 이해하지 못해 1-2주 동안 짜증나고 괴롭고 자괴감까지 들었는데 포기하지 않고 매일 집에서나 학원에서나 코드 생각하느라 고생한 제 자신에게 박수를 보내고 싶습니다.
+
+          4. 
+
 
 
