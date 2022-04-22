@@ -1,25 +1,25 @@
-package ·Ôµ¥¿ùµå_Æ¼ÄÏ¹ßÇà_½Ã½ºÅÛ;
+package ë¡¯ë°ì›”ë“œ_í‹°ì¼“ë°œí–‰_ì‹œìŠ¤í…œ;
 
 public class StaticData {
 
-	// ÆÄÅ©ÀÔÀå±Ç(1ÀÏ, ¿ÀÈÄ 4½Ã °¢°¢)
-		public int ADULT_DAY = 59000;
-		public int TEEN_DAY = 52000;
-		public int CHILD_DAY = 46000;
-		public int BABY_DAY = 15000;
-		public int FREE = 0;
-		public int ADULT_AFTER = 47000; 
-		public int TEEN_AFTER = 41000;
-		public int CHILD_AFTER = 35000; 
-		public int BABY_AFTER = 15000;
+	// íŒŒí¬ì…ì¥ê¶Œ(1ì¼, ì˜¤í›„ 4ì‹œ ê°ê°)
+		public static int ADULT_DAY = 59000;
+		public static int TEEN_DAY = 52000;
+		public static int CHILD_DAY = 46000;
+		public static int BABY_DAY = 15000;
+		public static int FREE = 0;
+		public static int ADULT_AFTER = 47000; 
+		public static int TEEN_AFTER = 41000;
+		public static int CHILD_AFTER = 35000; 
+		public static int BABY_AFTER = 15000;
 		
-		//Á¾ÇÕÀÔÀå±Ç(1ÀÏ, ¿ÀÈÄ 4½Ã °¢°¢)
-		public int ADULT_DAY_TOTAL = 62000;
-		public int TEEN_DAY_TOTAL = 54000;
-		public int CHILD_DAY_TOTAL = 47000; 
-		public int BABY_DAY_TOTAL = 15000;
-		public int ADULT_AFTER_TOTAL = 50000; 
-		public int TEEN_AFTER_TOTAL = 43000;
-		public int CHILD_AFTER_TOTAL = 36000; 
-		public int BABY_AFTER_TOTAL = 15000;
+		//ì¢…í•©ì…ì¥ê¶Œ(1ì¼, ì˜¤í›„ 4ì‹œ ê°ê°)
+		public static int ADULT_DAY_TOTAL = 62000;
+		public static int TEEN_DAY_TOTAL = 54000;
+		public static int CHILD_DAY_TOTAL = 47000; 
+		public static int BABY_DAY_TOTAL = 15000;
+		public static int ADULT_AFTER_TOTAL = 50000; 
+		public static int TEEN_AFTER_TOTAL = 43000;
+		public static int CHILD_AFTER_TOTAL = 36000; 
+		public static int BABY_AFTER_TOTAL = 15000;
 }
